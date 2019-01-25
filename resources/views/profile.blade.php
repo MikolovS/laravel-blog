@@ -1,26 +1,35 @@
 @extends('layouts.app')
-
 @section('content')
-<div class="container">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="panel panel-default">
-                <div class="panel-heading">Dashboard</div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Dashboard</div>
 
-                <div class="panel-body">
-                    @if (session('status'))
-                        <div class="alert alert-success">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
-                    You are logged in!
+                    <div class="panel-body">
+                        @if (isset($message))
+                            <div class="alert alert-success">
+                                {{ $message }}
+                            </div>
+                        @endif
+                    </div>
                 </div>
+                <div>
+                    <a class="btn btn-primary" href="{{url('thread/create')}}" role="button">+ Add</a>
+                    <hr>
+                </div>
+
+                @forelse($threads as $thread)
+                    <div class="category__article card-container">
+                        <h2>{{$thread->title}}</h2>
+                        <p>{{$thread->content}}</p>
+                        <a class="btn btn-primary" href="{{route('edit_thread', [$thread->id])}}"
+                           role="button">Update</a>
+                    </div>
+                @empty
+                    <b>You have't any threads</b>
+                @endforelse
             </div>
-            <h1>Your profile page!</h1>
-            <p>Email: {{Auth::user()->email}}</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
         </div>
     </div>
-</div>
 @endsection

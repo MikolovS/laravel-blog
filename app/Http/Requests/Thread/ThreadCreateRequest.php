@@ -1,15 +1,15 @@
 <?php
 declare( strict_types = 1 );
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Thread;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Class UserCreateRequest
- * @package App\Http\Requests\User
+ * Class ThreadCreateRequest
+ * @package App\Http\Requests\Thread
  */
-class UserCreateRequest extends FormRequest
+class ThreadCreateRequest extends FormRequest
 {
 	/**
 	 * Determine if the user is authorized to make this request.
@@ -29,8 +29,19 @@ class UserCreateRequest extends FormRequest
 	public function rules () : array
 	{
 		return [
-			'email'    => 'required|string|email|max:255|unique:users',
-			'password' => 'required|string|min:6|confirmed',
+			'title'   => [
+				'required',
+				'string',
+				'min:3',
+				'unique:threads',
+				'regex:/^[A-Za-z\s-_]+$/s',
+			],
+			'content' => [
+				'nullable',
+				'string',
+				'max:255',
+				'regex:/^.+\.$/s',
+			],
 		];
 	}
 }

@@ -3,6 +3,7 @@ declare( strict_types = 1 );
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -19,13 +20,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User wherePassword($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereRememberToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereCreatedAt( $value )
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereEmail( $value )
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereId( $value )
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User wherePassword( $value )
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereRememberToken( $value )
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUpdatedAt( $value )
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Thread[] $threads
  */
 class User extends Authenticatable
 {
@@ -50,4 +52,12 @@ class User extends Authenticatable
 		'password',
 		'remember_token',
 	];
+
+	/**
+	 * @return HasMany
+	 */
+	public function threads () : HasMany
+	{
+		return $this->hasMany(Thread::class);
+	}
 }
