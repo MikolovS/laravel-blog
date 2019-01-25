@@ -1,0 +1,46 @@
+version: '3.5'
+services:
+
+  # application (code)
+  app:
+    build:
+      context: ./
+      dockerfile: app.dockerfile
+    working_dir: /app
+    volumes:
+      - ${PROJECT_DIR}:/app
+    networks:
+      - backend
+    environment:
+      - DB_PORT=5432
+      - DB_HOST=database
+      - RHOST=redis
+
+  # http server
+  web:
+    build:
+      context: ./
+      dockerfile: web.dockerfile
+    working_dir: /app
+    networks:
+      - backend
+    volumes:
+      - ${PROJECT_DIR}:/app
+    ports:
+      - 333:80
+
+  # database
+  database:
+    image: postgres:9.6
+    networks:
+      - backend
+    environment:
+      - POSTGRES_DB=forum
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 54323:5432
+
+networks:
+  backend:
+    driver: "bridge"
