@@ -1,71 +1,78 @@
 <?php
+declare( strict_types = 1 );
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
+use App\Http\Requests\User\UserCreateRequest;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Auth\RegistersUsers;
+use App\Services\AuthService;
+use App\Services\UserService;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Foundation\Auth\RedirectsUsers;
+use Illuminate\View\View;
 
+/**
+ * Class RegisterController
+ * @package App\Http\Controllers\Auth
+ */
 class RegisterController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Register Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
-    |
-    */
+	use RedirectsUsers;
 
-    use RegistersUsers;
+	/**
+	 * Where to redirect users after registration.
+	 *
+	 * @var string
+	 */
+	protected $redirectTo = '/profile';
 
-    /**
-     * Where to redirect users after registration.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
+	/**
+	 * @var UserService
+	 */
+	private $userService;
 
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('guest');
-    }
+	/**
+	 * @var AuthService
+	 */
+	private $authService;
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
-    }
+	/**
+	 * Create a new controller instance.
+	 *
+	 * @param UserService $userService
+	 * @param AuthService $authService
+	 */
+	public function __construct (UserService $userService, AuthService $authService)
+	{
+		$this->middleware('guest');
+		$this->userService = $userService;
+		$this->authService = $authService;
+	}
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return \App\User
-     */
-    protected function create(array $data)
-    {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-        ]);
-    }
+	/**
+	 * Show the application registration form.
+	 *
+	 * @return View
+	 */
+	public function showRegistrationForm () : View
+	{
+		return view('auth.register');
+	}
+
+	/**
+	 * Handle register request
+	 *
+	 * @param UserCreateRequest $request
+	 * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+	 */
+	public function register (UserCreateRequest $request)
+	{
+		$user = $this->userService->create($request->validated());
+
+		event(new Registered($user));
+
+		$this->authService->login($user);
+
+		return redirect($this->redirectPath());
+	}
 }
