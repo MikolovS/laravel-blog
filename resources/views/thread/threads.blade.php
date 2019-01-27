@@ -42,7 +42,7 @@
                     <div class="level">
                         <div class="flex">
                             <h4>
-                                {{ $thread->title }}
+                                <a href="{{route('thread_with_replies', [$thread->id])}}">{{ $thread->title }}</a>
                             </h4>
 
                             <h5>

@@ -27,7 +27,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereRememberToken( $value )
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUpdatedAt( $value )
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Thread[] $threads
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Thread[]
+ *                    $threads
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Reply[] $replies
  */
 class User extends Authenticatable
 {
@@ -59,5 +61,13 @@ class User extends Authenticatable
 	public function threads () : HasMany
 	{
 		return $this->hasMany(Thread::class);
+	}
+
+	/**
+	 * @return HasMany
+	 */
+	public function replies () : HasMany
+	{
+		return $this->hasMany(Reply::class, 'user_id');
 	}
 }

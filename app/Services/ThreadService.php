@@ -105,4 +105,16 @@ class ThreadService
 			return $author;
 		});
 	}
+
+	/**
+	 * @param Thread $thread
+	 * @return \Illuminate\Database\Eloquent\Collection
+	 */
+	public function getThreadReplies (Thread $thread)
+	{
+		return $thread->replays()
+		              ->with('creator')
+		              ->orderByDesc('created_at')
+		              ->get();
+	}
 }

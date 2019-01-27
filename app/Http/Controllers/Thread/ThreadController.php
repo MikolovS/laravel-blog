@@ -124,4 +124,16 @@ class ThreadController extends Controller
 			'authors' => $this->threadService->getUsersWithThreads($request->authors ?? []),
 		]);
 	}
+
+	/**
+	 * @param Thread $thread
+	 * @return \Illuminate\Contracts\View\Factory|View
+	 */
+	public function getThreadWithReplies (Thread $thread)
+	{
+		return view('thread.thread_with_replies')->with([
+			'thread'  => $thread,
+			'replies' => $this->threadService->getThreadReplies($thread),
+		]);
+	}
 }
