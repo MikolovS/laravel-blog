@@ -4,6 +4,7 @@ declare( strict_types = 1 );
 namespace App\Services;
 
 use App\Models\Thread;
+use App\Models\User;
 use Illuminate\Support\Collection;
 
 /**
@@ -68,5 +69,40 @@ class ThreadService
 		return $this->repository::whereUserId($userId)
 		                        ->orderByDesc('created_at')
 		                        ->get();
+	}
+
+	/**
+	 * @param array $options
+	 * @return Thread[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+	 */
+	public function getFeed (array $options)
+	{
+		$query = $this->repository::with('creator');
+
+		if (isset($options[ 'authors' ]))
+			$query->whereIn('user_id', $options[ 'authors' ]);
+
+		if (isset($options[ 'order' ]))
+			$query->orderBy('created_at', $options[ 'order' ]);
+		else
+			$query->orderByDesc('created_at');
+
+		return $query->get();
+	}
+
+	/**
+	 * @param array $checkedAuthors
+	 * @return User[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+	 */
+	public function getUsersWithThreads (array $checkedAuthors)
+	{
+		$authors = User::whereHas('threads')
+		               ->get();
+
+		return $authors->map(function (User $author) use ($checkedAuthors) {
+			$author->checked = in_array($author->id, $checkedAuthors);
+
+			return $author;
+		});
 	}
 }

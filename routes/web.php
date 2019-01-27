@@ -9,7 +9,7 @@ Route::group(['middleware' => 'auth'], function () {
 
 	Route::get('profile', 'Thread\ThreadController@getUserThreads')
 	     ->name('profile');
-
+	Route::get('threads', 'Thread\ThreadController@getFeed')->name('threads');
 	Route::group(['prefix' => 'thread'], function () {
 		Route::group(['middleware' => 'checkCanModifyThread'], function (){
 			Route::get('edit/{thread}', 'Thread\ThreadController@get')

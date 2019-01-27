@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Thread;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Thread\ThreadCreateRequest;
+use App\Http\Requests\Thread\ThreadFeedRequest;
 use App\Http\Requests\Thread\ThreadUpdateRequest;
 use App\Models\Thread;
 use App\Models\User;
@@ -106,6 +107,21 @@ class ThreadController extends Controller
 	{
 		$this->threadService->delete($thread);
 
-		return view('profile')->with(['threads' => $this->threadService->getUserThreads(\Auth::user()->id), 'message' => 'Thread deleted']);
+		return view('profile')->with([
+			'threads' => $this->threadService->getUserThreads(\Auth::user()->id),
+			'message' => 'Thread deleted',
+		]);
+	}
+
+	/**
+	 * @param ThreadFeedRequest $request
+	 * @return \Illuminate\Contracts\View\Factory|View
+	 */
+	public function getFeed (ThreadFeedRequest $request)
+	{
+		return view('thread.threads')->with([
+			'threads' => $this->threadService->getFeed($request->validated()),
+			'authors' => $this->threadService->getUsersWithThreads($request->authors ?? []),
+		]);
 	}
 }
