@@ -30,12 +30,6 @@ jobs:
             dockerize -wait tcp://localhost:3306 -timeout 1m
 #            sudo mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';"
       - run:
-          name: Start database server
-          command: |
-            sudo service mysql start
-            sleep 2
-            ps aux | grep mysql
-      - run:
           name: Install server
           command: |
             sudo apt-get update
@@ -43,6 +37,12 @@ jobs:
             sudo apt-get install -y zlib1g-dev libicu-dev g++
             sudo apt-get install mysql-client
             sudo apt-get -y install mysql-server
+      - run:
+          name: Start database server
+          command: |
+            sudo service mysql start
+            sleep 2
+            ps aux | grep mysql
       - run:
           name: Install PHP exts
           command: |
