@@ -4,15 +4,15 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/php:7.2-apache-stretch-node-browsers
-        environment:
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_HOST: 127.0.0.1
-          MYSQL_ALLOW_EMPTY_PASSWORD: true
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mysql:9.4
+       - image: circleci/mysql
+         environment:
+           MYSQL_ROOT_PASSWORD: password
+           MYSQL_HOST: 127.0.0.1
+           MYSQL_ALLOW_EMPTY_PASSWORD: true
 
     working_directory: ~/laravel
 
@@ -25,10 +25,6 @@ jobs:
             sudo apt-get install -y libzip-dev
             sudo apt-get install -y zlib1g-dev libicu-dev g++
             sudo apt-get install mysql-client
-            wget https://repo.mysql.com/mysql80-community-release-el7-1.noarch.rpm
-            sudo apt-get install -y yum
-            sudo yum localinstall -y mysql80-community-release-el7-1.noarch.rpm
-            sudo yum install -y mysql-community-server
       - run:
           name: Install PHP exts
           command: |
