@@ -34,6 +34,15 @@ class CreateThreadsTable extends Migration
             $table->timestamps();
         });
 
+	    Schema::table('threads', function (Blueprint $table) {
+		    $table->foreign('user_id')
+		          ->references('id')
+		          ->on('users')
+		          ->onDelete('cascade');
+
+		    $table->timestamps();
+	    });
+
 	    DB::statement("COMMENT ON TABLE threads IS 'Users threads'");
     }
 

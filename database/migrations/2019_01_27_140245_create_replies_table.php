@@ -26,6 +26,10 @@ class CreateRepliesTable extends Migration
 			$table->string('content')
 			      ->nullable();
 
+			$table->timestamps();
+		});
+
+		Schema::table('replies', function (Blueprint $table) {
 			$table->foreign('user_id')
 			      ->references('id')
 			      ->on('users')
@@ -34,8 +38,6 @@ class CreateRepliesTable extends Migration
 			      ->references('id')
 			      ->on('threads')
 			      ->onDelete('cascade');
-
-			$table->timestamps();
 		});
 
 		DB::statement("COMMENT ON TABLE replies IS 'Threads replays'");
