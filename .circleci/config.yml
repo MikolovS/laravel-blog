@@ -47,7 +47,6 @@ jobs:
           name: Create non-admin user
           command: |
             sudo mysql -u root -e "CREATE database test_db;"
-#            sudo mysql -u root -e "CREATE user test_user IDENTIFIED BY 'password';"
             sudo mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'test_user'@'localhost' IDENTIFIED BY 'password';"
       - run: sudo composer self-update
       - restore_cache:
