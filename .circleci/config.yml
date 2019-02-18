@@ -1,65 +1,45 @@
-# PHP CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-php/ for more details
-#
 version: 2
+
 jobs:
   build:
     docker:
-      # specify the version you desire here
-      - image: framgia/laravel-workspace
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      - image: circleci/mysql:5.7.18
+      - image: circleci/php:7.1-node-browsers
         environment:
-          MYSQL_DATABASE: homestead_test
-          MYSQL_USER: homestead_test
-          MYSQL_PASSWORD: secret
-          MYSQL_ROOT_PASSWORD: root
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_DB: mate
+          MYSQL_USER: root
+          MYSQL_ALLOW_EMPTY_PASSWORD: true
+          MYSQL_PASSWORD:
+      - image: mysql:5.7
+        command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin --innodb-large-prefix=true --innodb-file-format=Barracuda
+        environment:
+          MYSQL_USER: root
+          MYSQL_ALLOW_EMPTY_PASSWORD: true
 
-    working_directory: ~/repo
+    working_directory: ~/laravel
 
     steps:
       - checkout
-
-      - run: chmod -R 777 storage
-      - run: cp .env.testing.example .env
-
-      # Download and cache dependencies
-      # Composer
+      - run: sudo apt install -y mysql-client
+      - run: sudo apt install -y libsqlite3-dev zlib1g-dev
+      - run: sudo docker-php-ext-install zip
+      - run: sudo composer self-update
       - restore_cache:
-          name: Restore composer cache
           keys:
-            - composer-{{ checksum "composer.json" }}
-            - composer-
-      - run: composer install -n --prefer-dist
+            - composer-v1-{{ checksum "composer.lock" }}
+            - composer-v1-
+      - run: composer install --dev --ignore-platform-reqs
       - save_cache:
-          name: Store composer cache
-          key: composer-{{ checksum "composer.json" }}
+          key: composer-v1-{{ checksum "composer.lock" }}
           paths:
             - vendor
-      # Yarn
-      - restore_cache:
-          name: Restore yarn cache
-          keys:
-            - yarn-{{ checksum "yarn.lock" }}
-            - yarn-
-      - run: yarn
-      - save_cache:
-          paths:
-            - node_modules
-          key: yarn-{{ checksum "composer.json" }}
-
-      - run: npm run production
-      - run: php artisan migrate --database=mysql_test
-      # run tests!
       - run:
-          command: |
-            mkdir -p /phpunit &&
-            php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-clover=phpunit/coverage-clover.xml --coverage-html=phpunit/coverage
-      - store_test_results:
-          path: /phpunit
-      - store_artifacts:
-          path: /phpunit
+          name: Mysql database
+          command: mysql  -h 127.0.0.1 -u root -e "create database mate;"
+      - run: cp .env.travis .env
+      - run: php artisan key:generate
+      - run: php artisan migrate
+      - run: mkdir -p build/logs
+      - run: php vendor/bin/phpunit tests/ --coverage-clover build/logs/clover.xml
+      - run: php vendor/bin/phpcbf --standard=ruleset.xml app/
+      - run: php vendor/bin/phpcs --standard=ruleset.xml app/
