@@ -46,17 +46,28 @@ jobs:
             sudo docker-php-ext-install intl
             sudo docker-php-ext-install pdo_mysql
       - restore_cache:
+          name: Restore composer cache
           keys:
             - composer-v1-{{ checksum "composer.lock" }}
             - composer-v1-
       - run: composer install --dev --ignore-platform-reqs
       - save_cache:
+          name: Save composer cache
           key: composer-v1-{{ checksum "composer.lock" }}
           paths:
             - vendor
+      - run:
+          name: Start code sniffer
+          command: |
+            php vendor/bin/phpcs --standard=$PSR ./app
+          environment:
+              PSR: psr2
       - run:
           name: Start migrations
           command: |
             cp .env.testing.example .env
             php artisan key:generate
             php artisan migrate
+#      - run:
+#          name: Start tests
+#          command:
