@@ -25,7 +25,9 @@ jobs:
             sudo apt-get install -y libzip-dev
             sudo apt-get install -y zlib1g-dev libicu-dev g++
             sudo apt-get install mysql-client
-            sudo apt-get -y install mysql-server
+            wget https://repo.mysql.com/mysql80-community-release-el7-1.noarch.rpm
+            yum localinstall mysql80-community-release-el7-1.noarch.rpm
+            yum install mysql-community-server
       - run:
           name: Install PHP exts
           command: |
