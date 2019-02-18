@@ -6,7 +6,7 @@ jobs:
       - image: circleci/php:7.1-node-browsers
         environment:
           MYSQL_HOST: 127.0.0.1
-          MYSQL_DB: mate
+          MYSQL_DB: forum
           MYSQL_USER: root
           MYSQL_ALLOW_EMPTY_PASSWORD: true
           MYSQL_PASSWORD:
@@ -35,8 +35,8 @@ jobs:
             - vendor
       - run:
           name: Mysql database
-          command: mysql  -h 127.0.0.1 -u root -e "create database mate;"
-      - run: cp .env.travis .env
+          command: mysql  -h 127.0.0.1 -u root -e "create database forum;"
+      - run: cp .env.testing.example .env
       - run: php artisan key:generate
       - run: php artisan migrate
       - run: mkdir -p build/logs
