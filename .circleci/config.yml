@@ -28,7 +28,13 @@ jobs:
           name: Wait for db
           command: |
             dockerize -wait tcp://localhost:3306 -timeout 1m
-            sudo mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';"
+#            sudo mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';"
+      - run:
+          name: Start database server
+          command: |
+            sudo service mysql start
+            sleep 2
+            ps aux | grep mysql
       - run:
           name: Install server
           command: |
