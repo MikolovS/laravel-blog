@@ -5,10 +5,12 @@ jobs:
       - image: circleci/php:7.2-apache-stretch-node-browsers
         environment:
           DB_PORT: 3306
-          DB_HOST: 127.0.0.1
+          DB_HOST: database
+          RHOST: redis
 
       - image: mysql:8.0
         command: --default-authentication-plugin=mysql_native_password
+        hostname: database
         ports:
           - "3306:3306"
         environment:
