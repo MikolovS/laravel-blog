@@ -7,6 +7,7 @@ jobs:
         environment:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_HOST: 127.0.0.1
+          MYSQL_ALLOW_EMPTY_PASSWORD: true
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -16,7 +17,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install things we need
+          name: Install server
           command: |
             sudo apt-get update
             sudo apt-get install -y libzip-dev
@@ -43,8 +44,11 @@ jobs:
       - run:
           name: Create non-admin user
           command: |
-            sudo mysql -u root -e "CREATE user myuser IDENTIFIED BY 'password';"
+            sudo mysql -u root -e "CREATE user test_user IDENTIFIED BY 'password';"
+            sudo mysql -u root -e "CREATE database test_db;"
       - run:
-          name: Run tests
+          name: Start migrations
           command: |
-            php connect.php
+            cp .env.testing.example .env
+            php artisan key:generate
+            php artisan migrate
