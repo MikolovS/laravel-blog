@@ -2,13 +2,13 @@ version: 2
 jobs:
   build:
     docker:
-      # specify the version you desire here
       - image: circleci/php:7.2-apache-stretch-node-browsers
+
       - image: circleci/mysql
-       environment:
-         MYSQL_ROOT_PASSWORD: password
-         MYSQL_HOST: 127.0.0.1
-         MYSQL_ALLOW_EMPTY_PASSWORD: true
+        environment:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_ALLOW_EMPTY_PASSWORD: true
 
     working_directory: ~/laravel
 
