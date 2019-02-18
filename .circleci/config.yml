@@ -20,8 +20,8 @@ jobs:
 
     steps:
       - checkout
-      - run: sudo apt install -y libsqlite3-dev zlib1g-dev
-      - run: sudo docker-php-ext-install bcmath iconv intl mbstring libxml2 exif opcache soap zip pdo_mysql
+      - run: sudo apt install -y libsqlite3-dev zlib1g-dev libxml2
+      - run: sudo docker-php-ext-install bcmath iconv intl mbstring exif opcache soap zip pdo_mysql
       - run: sudo composer self-update
       - restore_cache:
           keys:
