@@ -40,7 +40,6 @@ class CreateRepliesTable extends Migration
 			      ->onDelete('cascade');
 		});
 
-		DB::statement("COMMENT ON TABLE replies IS 'Threads replays'");
 	}
 
 	/**

@@ -36,7 +36,6 @@ class CreateThreadsTable extends Migration
 		          ->onDelete('cascade');
 	    });
 
-	    DB::statement("COMMENT ON TABLE threads IS 'Users threads'");
     }
 
     /**
