@@ -1,44 +1,50 @@
 version: 2
-
 jobs:
   build:
     docker:
-      - image: circleci/php:7.2-node-browsers
+      # specify the version you desire here
+      - image: circleci/php:7.2-apache-stretch-node-browsers
         environment:
+          MYSQL_ROOT_PASSWORD: password
           MYSQL_HOST: 127.0.0.1
-          MYSQL_DB: forum
-          MYSQL_USER: root
-          MYSQL_ALLOW_EMPTY_PASSWORD: true
-          MYSQL_PASSWORD:
-      - image: mysql:5.7
-        command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin --innodb-large-prefix=true --innodb-file-format=Barracuda
-        environment:
-          MYSQL_USER: root
-          MYSQL_ALLOW_EMPTY_PASSWORD: true
 
-    working_directory: ~/laravel
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/mysql:9.4
 
     steps:
       - checkout
-      - run: sudo apt install -y libsqlite3-dev zlib1g-dev libxml2
-      - run: sudo docker-php-ext-install bcmath iconv intl mbstring exif opcache soap zip pdo_mysql
-      - run: sudo composer self-update
-      - restore_cache:
-          keys:
-            - composer-v1-{{ checksum "composer.lock" }}
-            - composer-v1-
-      - run: composer install --dev --ignore-platform-reqs
-      - save_cache:
-          key: composer-v1-{{ checksum "composer.lock" }}
-          paths:
-            - vendor
       - run:
-          name: Mysql database
-          command: mysql  -h 127.0.0.1 -u root -e "create database forum;"
-      - run: cp .env.testing.example .env
-      - run: php artisan key:generate
-      - run: php artisan migrate
-      - run: mkdir -p build/logs
-      - run: php vendor/bin/phpunit tests/ --coverage-clover build/logs/clover.xml
-      - run: php vendor/bin/phpcbf --standard=ruleset.xml app/
-      - run: php vendor/bin/phpcs --standard=ruleset.xml app/
+          name: Install things we need
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y libzip-dev
+            sudo apt-get install -y zlib1g-dev libicu-dev g++
+            sudo apt-get install mysql-client
+            sudo apt-get -y install mysql-server
+      - run:
+          name: Install PHP exts
+          command: |
+            sudo docker-php-ext-install zip
+            sudo docker-php-ext-configure intl
+            sudo docker-php-ext-install intl
+            sudo docker-php-ext-install pdo_mysql
+      - run:
+          name: Fix MySQL socket config
+          command: |
+            sudo sh -c "echo 'pdo_mysql.default_socket=/var/run/mysqld/mysqld.sock' > /usr/local/etc/php/conf.d/pdo.ini"
+      - run:
+          name: Start database server
+          command: |
+            sudo service mysql start
+            sleep 2
+            ps aux | grep mysql
+      - run:
+          name: Create non-admin user
+          command: |
+            sudo mysql -u root -e "CREATE user myuser IDENTIFIED BY 'password';"
+      - run:
+          name: Run tests
+          command: |
+            php connect.php
