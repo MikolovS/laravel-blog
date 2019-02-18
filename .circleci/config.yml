@@ -18,6 +18,15 @@ jobs:
           MYSQL_ROOT_HOST: 127.0.0.1
           MYSQL_DATABASE: test_db
 
+      - image: circleci/redis:5.0.3
+        hostname: redis
+        environment:
+          ALLOW_EMPTY_PASSWORD: yes
+          REDIS_EXTRA_FLAGS: --maxmemory 200mb
+        ports:
+          - "6379:6379"
+        command: ["redis-server", "--appendonly", "yes"]
+
     working_directory: ~/app
 
     steps:
@@ -31,7 +40,10 @@ jobs:
           name: Wait for db
           command: |
             dockerize -wait tcp://localhost:3306 -timeout 1m
-#            sudo mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';"
+      - run:
+          name: Wait for redis
+          command: |
+            dockerize -wait tcp://localhost:6379 -timeout 1m
       - run:
           name: Install server
           command: |
@@ -56,12 +68,12 @@ jobs:
           key: composer-v1-{{ checksum "composer.lock" }}
           paths:
             - vendor
-      - run:
-          name: Start code sniffer
-          command: |
-            php vendor/bin/phpcs --standard=$PSR ./app
-          environment:
-              PSR: psr2
+      #      - run:
+      #          name: Start code sniffer
+      #          command: |
+      #            php vendor/bin/phpcs --standard=$PSR ./app
+      #          environment:
+      #              PSR: psr2
       - run:
           name: Start migrations
           command: |
