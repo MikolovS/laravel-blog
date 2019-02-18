@@ -21,13 +21,12 @@ jobs:
       - run:
           name: Install server
           command: |
-            wget https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-11.noarch.rpm
-            rpm -ivh yum-3.4.3-154.el7.centos.noarch.rpm
             sudo apt-get update
             sudo apt-get install -y libzip-dev
             sudo apt-get install -y zlib1g-dev libicu-dev g++
             sudo apt-get install mysql-client
             wget https://repo.mysql.com/mysql80-community-release-el7-1.noarch.rpm
+            sudo apt-get install yum
             yum localinstall mysql80-community-release-el7-1.noarch.rpm
             yum install mysql-community-server
       - run:
