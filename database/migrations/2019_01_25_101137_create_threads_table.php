@@ -20,16 +20,11 @@ class CreateThreadsTable extends Migration
         Schema::create('threads', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->integer('user_id');
+            $table->integer('user_id')->unsigned();
             $table->string('title')
                   ->unique();
             $table->string('content')
                   ->nullable();
-
-	        $table->foreign('user_id')
-	              ->references('id')
-	              ->on('users')
-	              ->onDelete('cascade');
 
             $table->timestamps();
         });
@@ -39,8 +34,6 @@ class CreateThreadsTable extends Migration
 		          ->references('id')
 		          ->on('users')
 		          ->onDelete('cascade');
-
-		    $table->timestamps();
 	    });
 
 	    DB::statement("COMMENT ON TABLE threads IS 'Users threads'");
