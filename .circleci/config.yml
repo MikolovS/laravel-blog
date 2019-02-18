@@ -20,8 +20,7 @@ jobs:
 
     steps:
       - checkout
-      - run: sudo apt install -y mysql-client
-      - run: sudo apt-get install php-mysql
+      - run: sudo apt install php7.2-curl php7.2-gd php7.2-json php7.2-mbstring php7.2-mcrypt php7.2-mysql
       - run: sudo apt install -y libsqlite3-dev zlib1g-dev
       - run: sudo docker-php-ext-install zip
       - run: sudo composer self-update
