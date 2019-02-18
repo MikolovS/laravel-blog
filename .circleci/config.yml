@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/php:7.1-node-browsers
+      - image: circleci/php:7.2-node-browsers
         environment:
           MYSQL_HOST: 127.0.0.1
           MYSQL_DB: forum
@@ -21,7 +21,6 @@ jobs:
     steps:
       - checkout
       - run: sudo apt install -y mysql-client
-      - run: sudo apt-get install php7.1-mysql
       - run: sudo apt install -y libsqlite3-dev zlib1g-dev
       - run: sudo docker-php-ext-install zip
       - run: sudo composer self-update
